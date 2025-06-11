@@ -27,7 +27,7 @@ jobs:
       - name: Run Buildless Capture & Analyze
         run: |
           covtool/bin/cov-capture --dir cov-int --language php --source-dir .
-          covtool/bin/cov-analyze --dir cov-int --all
+          covtool/bin/cov-run-desktop --dir cov-int --analyze --all
           covtool/bin/cov-format-errors --dir cov-int --json-output cov-results.json
 
       - name: Package results
