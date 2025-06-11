@@ -1,0 +1,33 @@
+name: Coverity Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  coverity-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Coverity Build Tool
+        run: |
+          wget https://scan.coverity.com/scripts/travisci_build_coverity_analysis.sh
+          chmod +x travisci_build_coverity_analysis.sh
+
+      - name: Run Coverity Scan
+        env:
+          COVERITY_SCAN_PROJECT_NAME: TheYnsK/DVWA
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          COVERITY_SCAN_NOTIFICATION_EMAIL: theynsk.2244@gmail.com
+        run: |
+          ./travisci_build_coverity_analysis.sh \
+            --dir cov-int \
+            --fs-capture-search DVWA
+
+      - name: Upload cov-int artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cov-int
+          path: cov-int
