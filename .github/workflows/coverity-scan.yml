@@ -1,4 +1,3 @@
-# .github/workflows/coverity-scan.yml
 name: Coverity Scan
 
 on:
@@ -9,11 +8,8 @@ jobs:
   coverity-scan:
     runs-on: ubuntu-latest
     env:
-      # Proje adınız Coverity Scan’de tam olarak nasıl görünüyorsa o
       COVERITY_PROJECT: 230290127_DVWATest
-      # Secrets → Actions altında ayarladığınız token
       COVERITY_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
-      # Bildirim e-posta adresiniz
       COVERITY_EMAIL: theynsk.2244@gmail.com
 
     steps:
@@ -22,36 +18,27 @@ jobs:
 
       - name: Download Coverity Analysis CLI
         run: |
-          # token ve project parametrelerini kullanarak Linux64 araç paketini indiriyoruz
-          curl -L "https://scan.coverity.com/download/linux64" \
-               --data "token=${COVERITY_TOKEN}&project=${COVERITY_PROJECT}" \
+          curl -L \
+            "https://scan.coverity.com/download/cxx/linux64?project=${COVERITY_PROJECT}&token=${COVERITY_TOKEN}" \
             -o coverity.tgz
           mkdir covtool
-          tar xzf coverity.tgz -C covtool --strip-components=1
+          tar xzf coverity.tgz --strip-components=1 -C covtool
 
-      - name: Run Buildless Capture & Analysis (PHP)
+      - name: Run Buildless Capture & Analyze
         run: |
-          cd covtool/bin
-          # PHP için buildless capture
-          ./cov-capture --dir "$GITHUB_WORKSPACE/cov-int" --language php --source-dir "$GITHUB_WORKSPACE/DVWA"
-          # Tam analiz
-          ./cov-analyze --dir "$GITHUB_WORKSPACE/cov-int" --all
-          # JSON raporu
-          ./cov-format-errors --dir "$GITHUB_WORKSPACE/cov-int" --json-output "$GITHUB_WORKSPACE/cov-results.json"
+          covtool/bin/cov-capture --dir cov-int --language php --source-dir DVWA
+          covtool/bin/cov-analyze --dir cov-int --all
+          covtool/bin/cov-format-errors --dir cov-int --json-output cov-results.json
 
       - name: Package results
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          zip -r cov-int.zip cov-int
+        run: zip -r cov-int.zip cov-int
 
       - name: Upload to Coverity Scan
         run: |
-          # Coverity Scan'e doğrudan POST ederek build sonuçlarını yüklüyoruz :contentReference[oaicite:0]{index=0}
           curl -X POST "https://scan.coverity.com/builds?project=${COVERITY_PROJECT}" \
             -F token="${COVERITY_TOKEN}" \
             -F email="${COVERITY_EMAIL}" \
             -F file=@cov-int.zip
 
       - name: Confirm submission
-        run: |
-          echo "Build submitted to Coverity Scan. Check dashboard for 'Last build analyzed' timestamp."
+        run: echo "Build submitted – check Coverity dashboard."
