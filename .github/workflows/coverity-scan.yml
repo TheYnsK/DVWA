@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COVERITY_PROJECT: 230290127_DVWATest
-      COVERITY_TOKEN: EH15aKgDxzgo4sRfYoGgNQ
+      COVERITY_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
       COVERITY_EMAIL: theynsk.2244@gmail.com
 
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Run Buildless Capture & Analyze
         run: |
           covtool/bin/cov-capture --dir cov-int --language php --source-dir .
-          covtool/bin/cov-run-desktop --dir cov-int --analyze --all
+          covtool/bin/cov-analyze --dir cov-int --all
           covtool/bin/cov-format-errors --dir cov-int --json-output cov-results.json
 
       - name: Package results
