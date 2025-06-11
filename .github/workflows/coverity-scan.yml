@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COVERITY_PROJECT: 230290127_DVWATest
-      COVERITY_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+      COVERITY_TOKEN: EH15aKgDxzgo4sRfYoGgNQ
       COVERITY_EMAIL: theynsk.2244@gmail.com
 
     steps:
