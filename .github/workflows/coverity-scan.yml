@@ -27,7 +27,7 @@ jobs:
             --fs-capture-search DVWA
 
       - name: Upload cov-int artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cov-int
           path: cov-int
